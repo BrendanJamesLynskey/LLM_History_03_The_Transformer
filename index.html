@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM History 03 &mdash; The Transformer Paper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a; --bg-card: #0d1117; --bg-code: #161b22;
+            --text-primary: #e6edf3; --text-secondary: #8b949e;
+            --accent: #A371F7; --accent-dim: #A371F744; --accent-glow: #A371F733;
+            --accent-2: #FF7B72; --accent-3: #F0A726; --accent-4: #3FB950;
+            --border: #21262d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif;
+            --max-width: 900px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); font-size: 17px; line-height: 1.7; overflow-x: hidden; }
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem 1.5rem; text-align: center; position: relative; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 600px; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+        .hero > * { position: relative; z-index: 1; }
+        .series-label { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+        .hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; color: var(--text-primary); line-height: 1.2; margin-bottom: 1rem; }
+        .hero h1 .accent { color: var(--accent); }
+        .hero .subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 640px; margin-bottom: 2rem; }
+        .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 2.5rem; }
+        .tag { font-family: var(--font-mono); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); background: var(--accent-dim); white-space: nowrap; }
+        .tag.r { border-color: var(--accent-2); color: var(--accent-2); background: rgba(255,123,114,0.10); }
+        .tag.y { border-color: var(--accent-3); color: var(--accent-3); background: rgba(240,167,38,0.10); }
+        .tag.g { border-color: var(--accent-4); color: var(--accent-4); background: rgba(63,185,80,0.10); }
+        .pipeline { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25rem; margin-bottom: 1rem; max-width: var(--max-width); }
+        .pipeline-step { font-family: var(--font-mono); font-size: 0.7rem; padding: 0.3rem 0.7rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-secondary); white-space: nowrap; }
+        .pipeline-arrow { color: var(--accent); font-size: 0.9rem; font-weight: 700; }
+        .slide { min-height: 100vh; max-width: var(--max-width); margin: 0 auto; padding: 4rem 1.5rem; position: relative; display: flex; flex-direction: column; justify-content: center; }
+        .slide-number { font-family: var(--font-display); font-size: 5rem; font-weight: 700; color: var(--accent-dim); position: absolute; top: 2rem; right: 1.5rem; line-height: 1; user-select: none; }
+        .slide h2 { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; color: var(--accent); margin-bottom: 1.5rem; line-height: 1.25; }
+        .slide h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .slide p { margin-bottom: 1rem; color: var(--text-secondary); }
+        .slide p strong { color: var(--text-primary); }
+        .slide ul, .slide ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        .slide li { margin-bottom: 0.4rem; }
+        .slide li strong { color: var(--text-primary); }
+        .slide code { font-family: var(--font-mono); font-size: 0.88em; background: var(--bg-code); padding: 0.1rem 0.35rem; border-radius: 3px; color: var(--accent); }
+        .table-wrap { overflow-x: auto; margin: 1.25rem 0; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { background: var(--bg-code); color: var(--accent); font-weight: 600; text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-family: var(--font-display); white-space: nowrap; }
+        td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: rgba(13, 17, 23, 0.5); }
+        .diagram-grid { display: grid; gap: 0.75rem; margin: 1.5rem 0; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
+        .diagram-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+        .diagram-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .diagram-panel { padding: 1rem; background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; }
+        .diagram-panel.accent-border { border-left: 3px solid var(--accent); }
+        .diagram-panel.r { border-left: 3px solid var(--accent-2); }
+        .diagram-panel.y { border-left: 3px solid var(--accent-3); }
+        .diagram-panel.g { border-left: 3px solid var(--accent-4); }
+        .diagram-panel h4 { font-family: var(--font-display); font-size: 1rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .diagram-panel.r h4 { color: var(--accent-2); }
+        .diagram-panel.y h4 { color: var(--accent-3); }
+        .diagram-panel.g h4 { color: var(--accent-4); }
+        .diagram-panel p, .diagram-panel ul { font-size: 0.9rem; }
+        .callout { background: var(--bg-card); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1.25rem 0; }
+        .callout p { margin-bottom: 0; }
+        .callout .callout-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+        .callout.r { border-left-color: var(--accent-2); } .callout.r .callout-label { color: var(--accent-2); }
+        .callout.y { border-left-color: var(--accent-3); } .callout.y .callout-label { color: var(--accent-3); }
+        .callout.g { border-left-color: var(--accent-4); } .callout.g .callout-label { color: var(--accent-4); }
+        .quote { font-family: var(--font-display); font-size: 1.15rem; font-style: italic; color: var(--text-primary); padding: 1rem 1.5rem; border-left: 3px solid var(--accent); background: var(--bg-card); margin: 1.25rem 0; border-radius: 0 8px 8px 0; }
+        .quote .attr { display: block; margin-top: 0.5rem; font-style: normal; font-size: 0.85rem; color: var(--text-secondary); font-family: var(--font-mono); }
+        .contents-list { list-style: none; padding-left: 0; counter-reset: contents; }
+        .contents-list li { counter-increment: contents; padding: 0.6rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+        .contents-list li:last-child { border-bottom: none; }
+        .contents-list li::before { content: counter(contents, decimal-leading-zero); font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); min-width: 2rem; }
+        .contents-list a { color: var(--text-primary); text-decoration: none; }
+        .contents-list a:hover { color: var(--accent); }
+        .footer { text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary); font-size: 0.85rem; border-top: 1px solid var(--border); max-width: var(--max-width); margin: 0 auto; }
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .person-card { display: grid; grid-template-columns: 90px 1fr; gap: 1rem; padding: 1rem; background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.6rem; }
+        .person-photo { width: 90px; height: 90px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; color: var(--accent); }
+        .person-card h4 { font-family: var(--font-display); margin-bottom: 0.2rem; color: var(--text-primary); }
+        .person-card .role { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+        .person-card p { font-size: 0.88rem; margin: 0; }
+        .formula { font-family: var(--font-mono); font-size: 1rem; padding: 1rem 1.25rem; background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; margin: 1rem 0; color: var(--text-primary); text-align: center; overflow-x: auto; }
+        @media (max-width: 640px) {
+            .slide { padding: 3rem 1rem; min-height: auto; }
+            .slide-number { font-size: 3rem; top: 1.5rem; right: 1rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .diagram-grid.cols-2, .diagram-grid.cols-3 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.8rem; }
+            table { font-size: 0.78rem; }
+            .person-card { grid-template-columns: 60px 1fr; }
+            .person-photo { width: 60px; height: 60px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="series-label">LLM History Series &mdash; Presentation 03</div>
+    <h1>The <span class="accent">Transformer Paper</span> &mdash; Eight Authors at Google Brain</h1>
+    <p class="subtitle"><em>Attention Is All You Need</em> is famous as a paper. It is also a snapshot of an unusual moment at Google Brain when eight researchers, all under thirty-five, briefly worked at the same desks and produced the architecture that runs the modern world.</p>
+
+    <div class="tags">
+        <span class="tag">June 2017</span><span class="tag">NeurIPS 2017</span>
+        <span class="tag y">Vaswani</span><span class="tag y">Shazeer</span><span class="tag y">Polosukhin</span>
+        <span class="tag y">Uszkoreit</span><span class="tag y">Jones</span><span class="tag y">Gomez</span>
+        <span class="tag y">Kaiser</span><span class="tag y">&#321;ukasz</span>
+    </div>
+
+    <div class="pipeline">
+        <span class="pipeline-step">Bahdanau attention</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Self-attention papers (2016)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Brain prototype (early 2017)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">arXiv (Jun 2017)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">NeurIPS (Dec 2017)</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">BERT &amp; GPT-1 (2018)</span>
+    </div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>What This Deck Covers</h2>
+    <p>The transformer paper has been written about thousands of times for its technical content. This deck covers it as a piece of history. The room it came out of, the eight people in the room, what they each contributed, why none of them stayed at Google, and what they did next.</p>
+    <ul class="contents-list">
+        <li><a href="#slide-01">The Setting &mdash; Google Brain in 2016&ndash;17</a></li>
+        <li><a href="#slide-02">The Eight Authors</a></li>
+        <li><a href="#slide-03">What the Paper Actually Says</a></li>
+        <li><a href="#slide-04">Multi-Head Attention as the Real Invention</a></li>
+        <li><a href="#slide-05">What Was New, What Was Borrowed</a></li>
+        <li><a href="#slide-06">The Reception &mdash; December 2017</a></li>
+        <li><a href="#slide-07">The 2018 Fork &mdash; BERT vs GPT-1</a></li>
+        <li><a href="#slide-08">2019&ndash;2020 &mdash; Acceleration</a></li>
+        <li><a href="#slide-09">Why Nobody Stayed at Google</a></li>
+        <li><a href="#slide-10">The Diaspora &mdash; Where the Eight Went</a></li>
+        <li><a href="#slide-11">What the Paper Got Wrong (and What It Underestimated)</a></li>
+        <li><a href="#slide-12">Cheat Sheet</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>The Setting &mdash; Google Brain in 2016&ndash;17</h2>
+    <p>Google Brain was founded in 2011 by <strong>Jeff Dean, Andrew Ng, and Greg Corrado</strong> as part of Google X. By 2016 it was a roughly 500-person research organisation in Mountain View, with a sister team at Google Brain Z&uuml;rich and a deep partnership with the much smaller, much fancier <strong>Google DeepMind</strong> in London (Brain and DeepMind were sibling research orgs from 2014 onwards, with often-uneasy relations &mdash; deck 07 covers DeepMind).</p>
+
+    <p>Brain in this period had four things in unusual combination:</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>What Brain had</h4>
+            <ul>
+                <li><strong>Compute.</strong> First-generation TPUs in 2015, v2 pods in early 2017. Nobody else in the world had this.</li>
+                <li><strong>People.</strong> Hinton (joined 2013), Bengio's students, Schmidhuber's students, the JHU/CMU/Stanford pipeline, plus a growing cohort of European researchers.</li>
+                <li><strong>Publication culture.</strong> Almost everything got published. Tensor2Tensor was open-source.</li>
+                <li><strong>Loose research direction.</strong> No single boss told the team what to work on.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel y">
+            <h4>The transformer team's specific situation</h4>
+            <ul>
+                <li>Working on Tensor2Tensor &mdash; an attempt at a unified seq2seq framework.</li>
+                <li>Trying to make NMT (Google Translate's bread and butter) train faster.</li>
+                <li>Frustrated with the wall-clock cost of LSTM training, which did not parallelise well across a TPU pod.</li>
+                <li>Aware of the Bahdanau attention paper, the Cheng et al 2016 self-attention paper, and the Lin et al 2017 structured self-attention paper.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The crucial constraint</div>
+        <p>An LSTM is sequential by construction &mdash; you cannot start step <em>t</em>+1 until step <em>t</em> has finished. On a TPU pod that means most of the chips sit idle. <strong>The transformer's attraction was, originally, that it parallelised.</strong> The fact that it generalised better was, by several accounts, a genuine surprise.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>The Eight Authors</h2>
+    <p>The author list, in order: <strong>Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, &#321;ukasz Kaiser, Illia Polosukhin</strong>. The footnote on the paper notes that all authors contributed equally and the order was random. That is not a polite fiction &mdash; multiple of the eight have publicly described it as genuinely a team effort with no clear lead.</p>
+
+    <p>That said, there is a rough division of labour the authors have described in various interviews:</p>
+
+    <div class="person-card">
+        <div class="person-photo">AV</div>
+        <div>
+            <h4>Ashish Vaswani &mdash; first author</h4>
+            <div class="role">USC PhD &rarr; Google Brain &rarr; Adept &rarr; Essential AI (founder)</div>
+            <p>Indian, did his PhD at USC under Daniel Marcu. The "first author" by alphabetical accident, but heavily involved in the experimental work and the writing. Calm and methodical. Co-founded Adept in 2022 with Niki Parmar; later left to found Essential AI.</p>
+        </div>
+    </div>
+    <div class="person-card">
+        <div class="person-photo">NS</div>
+        <div>
+            <h4>Noam Shazeer</h4>
+            <div class="role">Google (1999&ndash;2021) &rarr; Character.AI co-founder &rarr; Google DeepMind (2024&ndash;)</div>
+            <p>Brilliant, idiosyncratic, the highest-paid IC at Google for years. Joined as employee number ~200, was central to AdSense and several other major systems before drifting into ML. Pushed multi-head attention as a generalisation, did much of the actual implementation. Founded Character.AI in 2021 (returned to Google with Daniel De Freitas in a 2024 reverse-acqui-hire that paid out over $2 B). Now back at DeepMind working on Gemini.</p>
+        </div>
+    </div>
+    <div class="person-card">
+        <div class="person-photo">NP</div>
+        <div>
+            <h4>Niki Parmar</h4>
+            <div class="role">USC &rarr; Google Brain &rarr; Adept (co-founder) &rarr; Essential AI (co-founder)</div>
+            <p>Indian. Did her master's at USC in the same lab as Vaswani, joined Brain shortly after him. Image transformer follow-up work. The first woman to be a major architect of a frontier-LM-defining paper.</p>
+        </div>
+    </div>
+    <div class="person-card">
+        <div class="person-photo">JU</div>
+        <div>
+            <h4>Jakob Uszkoreit</h4>
+            <div class="role">Google Brain &rarr; Inceptive (co-founder, 2021)</div>
+            <p>German; son of Hans Uszkoreit, a famous computational linguist at Saarbr&uuml;cken. Multi-lingual, articulate, often credited with the "self-attention is all you need" framing &mdash; reportedly pushed the team to drop the recurrence completely. Now applies transformers to mRNA design at Inceptive.</p>
+        </div>
+    </div>
+    <div class="person-card">
+        <div class="person-photo">LJ</div>
+        <div>
+            <h4>Llion Jones</h4>
+            <div class="role">Google Brain &rarr; Sakana AI (co-founder, Tokyo, 2023)</div>
+            <p>Welsh. Did much of the implementation work in Tensor2Tensor, including the production-quality attention layers everyone subsequently used. Soft-spoken; one of the longest to remain at Google after the paper. Now in Tokyo running Sakana AI with David Ha.</p>
+        </div>
+    </div>
+    <div class="person-card">
+        <div class="person-photo">AG</div>
+        <div>
+            <h4>Aidan N. Gomez</h4>
+            <div class="role">Google Brain intern (2017) &rarr; Oxford &rarr; Cohere (co-founder, 2019)</div>
+            <p>Canadian. The youngest author by a margin &mdash; a 21-year-old University of Toronto undergraduate intern at Brain when the paper was written. Went on to do his DPhil at Oxford under Yarin Gal, then co-founded Cohere with Ivan Zhang and Nick Frosst. CEO of Cohere today.</p>
+        </div>
+    </div>
+    <div class="person-card">
+        <div class="person-photo">&#321;K</div>
+        <div>
+            <h4>&#321;ukasz Kaiser</h4>
+            <div class="role">Google Brain &rarr; OpenAI (2021&ndash;)</div>
+            <p>Polish, formerly a theoretical computer scientist at the University of Warsaw and Universit&eacute; Paris Diderot. Co-author also of the One Model To Learn Them All paper. The first of the eight to leave for OpenAI; reportedly central to o1 / o3 training infrastructure.</p>
+        </div>
+    </div>
+    <div class="person-card">
+        <div class="person-photo">IP</div>
+        <div>
+            <h4>Illia Polosukhin</h4>
+            <div class="role">Google &rarr; NEAR Protocol (co-founder, 2017)</div>
+            <p>Ukrainian. Left Google in late 2017 &mdash; before the paper had even fully landed publicly &mdash; to co-found NEAR Protocol, a layer-1 blockchain. Has spoken candidly about how the original NEAR mission was AI-related and pivoted to crypto when funding made it convenient. Returned closer to AI work in recent years.</p>
+        </div>
+    </div>
+
+    <div class="callout y">
+        <div class="callout-label">An unusual fact about the team</div>
+        <p>None of the eight had a deep statistical-NLP background. They were a mix of ML engineers, theoretical computer scientists, an undergraduate, and people who had done other things at Google for years. The paper is in some sense an outsider paper to traditional NLP, written by people whose tools were TPUs and Tensor2Tensor rather than Penn Treebank and CoNLL.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>What the Paper Actually Says</h2>
+    <p>The paper is structured as a single proposal: <strong>build sequence-to-sequence models out of attention layers and feed-forward layers only, with no recurrence.</strong> Everything else is in service of making that work.</p>
+
+    <h3>The architecture in one paragraph</h3>
+    <p>An encoder stack of <em>N</em> = 6 identical layers; a decoder stack of <em>N</em> = 6 identical layers. Each encoder layer has multi-head self-attention plus a position-wise feed-forward network. Each decoder layer has masked multi-head self-attention, then cross-attention into the encoder output, then position-wise FFN. Residual connections and layer norm everywhere. Sinusoidal positional encodings added to the input embeddings.</p>
+
+    <h3>Scaled dot-product attention</h3>
+    <div class="formula">Attention(Q, K, V) = softmax(QK<sup>T</sup> / &radic;d<sub>k</sub>) V</div>
+    <p>Q, K, V are the queries, keys and values &mdash; in self-attention all derived from the same input by separate linear projections. The <code>&radic;d<sub>k</sub></code> scaling is a small but important detail; without it, large dot products push softmax into a saturated regime and gradients vanish. Shazeer's contribution.</p>
+
+    <h3>Multi-head attention</h3>
+    <div class="formula">MultiHead(Q, K, V) = Concat(head<sub>1</sub>, &hellip;, head<sub>h</sub>) W<sup>O</sup><br>head<sub>i</sub> = Attention(QW<sup>Q</sup><sub>i</sub>, KW<sup>K</sup><sub>i</sub>, VW<sup>V</sup><sub>i</sub>)</div>
+    <p>The paper's most underrated technical contribution. Rather than one attention computation, do <em>h</em> = 8 in parallel with smaller key dimension, and concatenate. This lets a single layer attend to multiple kinds of relationship simultaneously &mdash; e.g. one head tracks syntactic dependencies, another long-range coreference, another simple positional offsets. Slide 04 expands on this.</p>
+
+    <h3>Headline numbers</h3>
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>Task</th><th>Best prior (2016&ndash;17)</th><th>Transformer base</th><th>Transformer big</th></tr></thead>
+        <tbody>
+            <tr><td>WMT 2014 EN&rarr;DE</td><td>26.30 BLEU (GNMT + attention ensemble)</td><td>27.3</td><td><strong>28.4</strong></td></tr>
+            <tr><td>WMT 2014 EN&rarr;FR</td><td>40.56 BLEU</td><td>38.1</td><td><strong>41.0</strong></td></tr>
+            <tr><td>Training cost</td><td>~weeks on a GPU cluster</td><td>12 h on 8 P100</td><td>3.5 days on 8 P100</td></tr>
+        </tbody>
+    </table>
+    </div>
+    <p>The training-cost line, easy to miss, is what turned heads inside Google. The transformer was state of the art on translation <em>and</em> trained an order of magnitude faster than the GNMT system it replaced.</p>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>Multi-Head Attention as the Real Invention</h2>
+    <p>The headline of the paper is <em>self-attention works</em>. But self-attention had been published already &mdash; Cheng et al 2016, Lin et al 2017. What had not been published was <strong>multi-head</strong> self-attention with the specific design used in the transformer. This is the invention that holds up best in retrospect.</p>
+
+    <div class="diagram-grid cols-3">
+        <div class="diagram-panel accent-border">
+            <h4>Why one head is not enough</h4>
+            <p>A single attention head computes one weighted sum per position. It can model one type of relationship at a time. Capacity is bound by the rank of the attention matrix.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Why <em>h</em> heads helps</h4>
+            <p><em>h</em> = 8 parallel heads with smaller per-head dimension <em>d<sub>k</sub></em> = <em>d</em>/<em>h</em> let each head specialise. Total parameters stay roughly the same as a single big head, total FLOPs identical. Free expressivity gain.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>What the heads actually do</h4>
+            <p>Visualisation work in 2018&ndash;19 (Clark et al, Voita et al) showed individual heads tracking interpretable phenomena: the verb of a clause, the subject of a relative pronoun, identical-token attention, position-offset attention. Most heads are redundant; some are specialised; the architecture is over-parameterised in a useful way.</p>
+        </div>
+    </div>
+
+    <div class="quote">
+        We thought maybe we'd publish this and people would use it instead of LSTMs for translation. We were not thinking about anything beyond that.
+        <span class="attr">&mdash; Aidan Gomez, in interviews around the paper's fifth anniversary (2022)</span>
+    </div>
+
+    <p>The team's own framing at the time was modest: a faster, cleaner translation architecture. Almost none of the implications visible by 2020 (decoder-only language modelling at 175 B parameters, in-context learning, scaling laws, RLHF) were anticipated.</p>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>What Was New, What Was Borrowed</h2>
+    <p>The transformer paper is famously short on novel components and long on careful integration. Honest accounting:</p>
+
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>Component</th><th>Status</th><th>Source</th></tr></thead>
+        <tbody>
+            <tr><td>Attention</td><td>Borrowed</td><td>Bahdanau / Cho / Bengio 2014; Cheng et al 2016 (self-attention)</td></tr>
+            <tr><td>Encoder-decoder pattern</td><td>Borrowed</td><td>Sutskever / Cho 2014</td></tr>
+            <tr><td>Residual connections</td><td>Borrowed</td><td>He et al, ResNet 2015</td></tr>
+            <tr><td>Layer normalisation</td><td>Borrowed</td><td>Ba, Kiros, Hinton 2016</td></tr>
+            <tr><td>Adam</td><td>Borrowed</td><td>Kingma &amp; Ba 2014</td></tr>
+            <tr><td>Dropout</td><td>Borrowed</td><td>Srivastava et al 2014</td></tr>
+            <tr><td>Sinusoidal positional encoding</td><td>Borrowed</td><td>Gehring et al, ConvS2S 2017</td></tr>
+            <tr><td>Scaled dot-product attention</td><td>New here</td><td>Vaswani et al 2017</td></tr>
+            <tr><td>Multi-head attention</td><td>New here</td><td>Vaswani et al 2017</td></tr>
+            <tr><td>Removing recurrence entirely</td><td>New here</td><td>Vaswani et al 2017</td></tr>
+            <tr><td>Pre-LN variants</td><td>Later</td><td>Xiong et al 2020 (Post-LN was original)</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">A useful framing</div>
+        <p>The paper is to NLP roughly what the iPhone was to mobile phones: very few of the components were genuinely new (touchscreen, mobile internet, browser, music player and camera all existed), but the integration was so much better than anything previously available that the result felt like a step change.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>The Reception &mdash; December 2017</h2>
+    <p>The paper landed on arXiv on 12 June 2017 (paper id <code>1706.03762</code>). It was accepted to NeurIPS 2017 in Long Beach, where it was a poster, not an oral. The poster session was busy but not extraordinary.</p>
+
+    <p>A few people understood immediately. Most did not.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Who got it immediately</h4>
+            <ul>
+                <li><strong>Alec Radford</strong>, OpenAI &mdash; began work on what became GPT-1 within months.</li>
+                <li><strong>Jacob Devlin</strong>, Google AI Language &mdash; began work on what became BERT.</li>
+                <li><strong>Colin Raffel</strong>, Brain &mdash; began work on what became T5.</li>
+                <li><strong>Andrej Karpathy</strong> &mdash; wrote a <em>minGPT</em> for teaching purposes; predicted decoder-only would dominate.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Who didn't</h4>
+            <ul>
+                <li>Most of the academic NLP community for a year &mdash; the 2018 ACL programme is still 80% LSTM-based work.</li>
+                <li>DeepMind, which spent 2017&ndash;2019 on RL before catching up on language.</li>
+                <li>Microsoft Research, which had a strong NMT group focused on related but distinct architectures.</li>
+                <li>Most of <em>Google</em> outside the immediate team. The transformer was an internal one-off for the better part of a year.</li>
+            </ul>
+        </div>
+    </div>
+
+    <p>The arc of the paper's citation count is steep but not immediate: a few hundred cites in 2018, low thousands in 2019, then exponential. By 2024 it was the most-cited paper in machine learning for a single year cohort and one of the ten most cited papers in computer science overall.</p>
+</section>
+
+<section class="slide" id="slide-07">
+    <div class="slide-number">07</div>
+    <h2>The 2018 Fork &mdash; BERT vs GPT-1</h2>
+    <p>In 2018, two papers used the transformer to train large language models with self-supervised pretraining and showed it generalised dramatically. They came out within four months of each other. They picked opposite halves of the architecture, and that choice mattered.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel y">
+            <h4>BERT &mdash; Devlin, Chang, Lee, Toutanova; Google AI; Oct 2018</h4>
+            <ul>
+                <li><strong>Encoder-only.</strong> Bidirectional &mdash; every token attends to every other.</li>
+                <li>Trained with <em>masked language modelling</em> (MLM): mask 15% of tokens, predict them.</li>
+                <li>Fine-tune the entire model on each downstream task.</li>
+                <li>Dominates GLUE / SQuAD overnight. Becomes the workhorse of enterprise NLP.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel g">
+            <h4>GPT-1 &mdash; Radford, Narasimhan, Salimans, Sutskever; OpenAI; Jun 2018</h4>
+            <ul>
+                <li><strong>Decoder-only.</strong> Autoregressive &mdash; each token attends only to previous tokens.</li>
+                <li>Trained with next-token prediction.</li>
+                <li>Fine-tune for downstream tasks (initially) but the architecture is generative.</li>
+                <li>117 M parameters. Modest at the time. Sets the template for everything OpenAI does next.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Why decoder-only won the long run</h3>
+    <p>BERT was strictly better at understanding tasks circa 2019. GPT-2 (Feb 2019) and especially GPT-3 (May 2020) showed that <strong>scale + decoder-only + autoregressive pretraining</strong> generalised to every task, including understanding tasks, simply by prompting. By 2022 the encoder-only line had largely been folded into less-glamorous production work; the decoder-only line was the frontier.</p>
+
+    <div class="callout">
+        <div class="callout-label">A subtle point about the decoder choice</div>
+        <p>Decoder-only is a modelling choice with a hidden architectural payoff: it lets you do <em>in-context learning</em>. A bidirectional encoder cannot meaningfully be prompted &mdash; there is no causal direction in which "the prompt comes first and the answer follows." Once GPT-3 demonstrated that prompting worked, the encoder-only branch lost most of its strategic value. Deck 05 picks this story up.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-08">
+    <div class="slide-number">08</div>
+    <h2>2019&ndash;2020 &mdash; Acceleration</h2>
+    <p>Once BERT and GPT-1 had shown the recipe, the field moved with unusual speed. Within 24 months you had:</p>
+
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>Year</th><th>Result</th><th>Lab</th><th>Why it mattered</th></tr></thead>
+        <tbody>
+            <tr><td>2019 Feb</td><td>GPT-2 (1.5 B)</td><td>OpenAI</td><td>Coherent paragraph-level generation. Staged release sets norms about disclosure.</td></tr>
+            <tr><td>2019 Jul</td><td>RoBERTa</td><td>FAIR</td><td>BERT trained for longer with more data &mdash; comfortably beats BERT. Lesson: training matters more than architectural cleverness.</td></tr>
+            <tr><td>2019 Oct</td><td>T5 (Raffel et al)</td><td>Google Brain</td><td>Encoder-decoder transformer at 11 B params. Unifies all NLP as text-to-text. C4 dataset.</td></tr>
+            <tr><td>2019 Nov</td><td>BART</td><td>FAIR</td><td>Denoising encoder-decoder. Strong on summarisation.</td></tr>
+            <tr><td>2020 Jan</td><td>Scaling Laws (Kaplan et al)</td><td>OpenAI</td><td>The empirical foundation of "just scale it". See deck 05.</td></tr>
+            <tr><td>2020 May</td><td>GPT-3 (175 B)</td><td>OpenAI</td><td>In-context learning. Few-shot generalisation across hundreds of tasks. The tipping point.</td></tr>
+            <tr><td>2020 Dec</td><td>Switch Transformer (1.6 T)</td><td>Google Brain</td><td>Mixture of Experts at scale. Foreshadowing GPT-4 and DeepSeek.</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="callout y">
+        <div class="callout-label">The reason the speed felt unusual</div>
+        <p>For most of the 2010s a research group could lead the field for two or three years on a single architectural insight. After 2017 the cycle compressed dramatically: a published recipe became a product within months, an architectural variation became obsolete within a year, and any lab that did not have its own large pretrained model in 2020 was behind.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-09">
+    <div class="slide-number">09</div>
+    <h2>Why Nobody Stayed at Google</h2>
+    <p>By the end of 2022 all eight authors of the transformer paper had left Google. Several were already gone before GPT-3 was published. This is not the usual pattern at Google &mdash; senior IC tenure is normally measured in years, and Brain was famously a fun place to work.</p>
+
+    <p>Each author has talked about their own reasons. Three patterns recur:</p>
+
+    <div class="diagram-grid cols-3">
+        <div class="diagram-panel accent-border">
+            <h4>1. Risk-tolerance mismatch</h4>
+            <p>The Brain culture was <em>publish, don't ship</em>. Several authors explicitly wanted to ship products built on this architecture, which inside Google meant going through Search or Cloud (a multi-year programme), and outside meant founding a company.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>2. Compensation / equity</h4>
+            <p>Google paid well but in salary and RSUs, not company-defining equity. The 2018&ndash;2022 founding wave (OpenAI, Anthropic, Cohere, Adept, Character, Inflection, Mistral, Sakana, Inceptive, NEAR) gave researchers double-digit-percent ownership of named, well-funded entities.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>3. Strategic frustration</h4>
+            <p>Several authors have hinted at frustration that Google did not capitalise on its own breakthrough quickly. The ChatGPT moment (Nov 2022) is widely framed inside Google as a "we built the technology and someone else shipped it" moment. By then most of the transformer team was elsewhere.</p>
+        </div>
+    </div>
+
+    <div class="quote">
+        We had everything we needed to ship something like ChatGPT in 2019. We didn't.
+        <span class="attr">&mdash; Reportedly said by several Brain alumni in interviews after 2022; the sentiment is widespread.</span>
+    </div>
+</section>
+
+<section class="slide" id="slide-10">
+    <div class="slide-number">10</div>
+    <h2>The Diaspora &mdash; Where the Eight Went</h2>
+    <p>The eight authors collectively founded or joined the leadership of seven different AI companies. In aggregate those companies have raised on the order of $20 B and employ more than 5,000 people.</p>
+
+    <div class="table-wrap">
+    <table>
+        <thead><tr><th>Author</th><th>2022 destination</th><th>Status (2026)</th></tr></thead>
+        <tbody>
+            <tr><td>Vaswani</td><td>Adept (co-founder)</td><td>Essential AI (founder, after leaving Adept)</td></tr>
+            <tr><td>Shazeer</td><td>Character.AI (co-founder)</td><td>Google DeepMind (returned 2024 in Character reverse-acqui-hire)</td></tr>
+            <tr><td>Parmar</td><td>Adept (co-founder)</td><td>Essential AI (co-founder)</td></tr>
+            <tr><td>Uszkoreit</td><td>Inceptive (co-founder)</td><td>Inceptive &mdash; transformers for mRNA design</td></tr>
+            <tr><td>Jones</td><td>Sakana AI (co-founder, Tokyo)</td><td>Sakana AI</td></tr>
+            <tr><td>Gomez</td><td>Cohere (co-founder, CEO)</td><td>Cohere &mdash; one of the larger non-FrontierLab companies</td></tr>
+            <tr><td>Kaiser</td><td>OpenAI (research)</td><td>OpenAI &mdash; reportedly central to o-series</td></tr>
+            <tr><td>Polosukhin</td><td>NEAR Protocol</td><td>NEAR &mdash; pivoted back toward AI infrastructure</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="callout y">
+        <div class="callout-label">A pattern</div>
+        <p>Three of the eight (Vaswani, Parmar, and indirectly Shazeer) have been on at least two different AI start-up adventures since the paper. The fluidity of the AI labour market means high-leverage people often go through several founding rounds in five years &mdash; something almost unheard of in software in earlier eras.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-11">
+    <div class="slide-number">11</div>
+    <h2>What the Paper Got Wrong (and What It Underestimated)</h2>
+    <p>The paper has held up remarkably well. The base architecture is essentially unchanged in 2026 &mdash; Llama, Qwen, GPT-5 and Claude 4 all use a recognisable Vaswani transformer with a few additions (RoPE positional encodings, RMSNorm, gated FFN variants like SwiGLU, MoE in some cases). The things the paper got wrong or did not anticipate:</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel r">
+            <h4>What it got wrong</h4>
+            <ul>
+                <li><strong>Sinusoidal positional encodings</strong> &mdash; superseded by learned, then by RoPE (rotary). Better at extrapolation.</li>
+                <li><strong>Post-LN</strong> &mdash; the original places LayerNorm <em>after</em> the residual addition. Pre-LN is far more stable at depth.</li>
+                <li><strong>ReLU FFN</strong> &mdash; superseded by GELU, SwiGLU, and gated variants.</li>
+                <li><strong>Single-head attention scoring</strong> &mdash; the paper considers and discards alternatives that turned out to matter.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel y">
+            <h4>What it underestimated</h4>
+            <ul>
+                <li><strong>How much it would scale.</strong> The paper trains models with at most 213 M parameters. They believed scaling would help; nobody guessed three orders of magnitude.</li>
+                <li><strong>How dominant decoder-only would become.</strong> The paper assumes encoder-decoder is the natural default. By 2022 decoder-only had won.</li>
+                <li><strong>How many problems would reduce to language.</strong> Vision, audio, code, robotics, protein structure, genomics, music &mdash; a transformer of some flavour now dominates each one.</li>
+                <li><strong>The economic implications.</strong> It was a research paper. By 2024 the architectures it founded were sustaining a $200 B+ industry.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The paper's most underrated claim</div>
+        <p>The conclusion section ends: <em>"We are excited about the future of attention-based models and plan to apply them to other tasks. We plan to extend the Transformer to problems involving input and output modalities other than text and to investigate local, restricted attention mechanisms to efficiently handle large inputs and outputs such as images, audio and video."</em> Every word of that has come true.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-12">
+    <div class="slide-number">12</div>
+    <h2>Cheat Sheet</h2>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>The paper in five bullets</h4>
+            <ul>
+                <li>Drop recurrence; build seq2seq from attention + FFN only.</li>
+                <li>Multi-head scaled dot-product attention is the key novelty.</li>
+                <li>Trains an order of magnitude faster than LSTM-based NMT.</li>
+                <li>State of the art on WMT EN-DE / EN-FR.</li>
+                <li>Code released as part of Tensor2Tensor.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel y">
+            <h4>The eight authors</h4>
+            <ul>
+                <li>Vaswani &rarr; Adept &rarr; Essential AI</li>
+                <li>Shazeer &rarr; Character &rarr; back to Google DeepMind</li>
+                <li>Parmar &rarr; Adept &rarr; Essential AI</li>
+                <li>Uszkoreit &rarr; Inceptive (mRNA)</li>
+                <li>Jones &rarr; Sakana AI (Tokyo)</li>
+                <li>Gomez &rarr; Cohere</li>
+                <li>Kaiser &rarr; OpenAI</li>
+                <li>Polosukhin &rarr; NEAR Protocol</li>
+            </ul>
+        </div>
+        <div class="diagram-panel g">
+            <h4>The 2018 fork</h4>
+            <ul>
+                <li>Encoder-only &rarr; BERT (Google AI). Workhorse for understanding tasks.</li>
+                <li>Decoder-only &rarr; GPT-1 (OpenAI). Generative; wins the long run.</li>
+                <li>Encoder-decoder &rarr; T5, BART. Strong on translation/summarisation.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel r">
+            <h4>What's next in the series</h4>
+            <ul>
+                <li>04 &mdash; the university labs that produced these people.</li>
+                <li>05 &mdash; OpenAI, where decoder-only became the frontier.</li>
+                <li>07 &mdash; Google DeepMind, where the paper came from but the product never quite did.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLM_Hub_LLM_History">LLM History series</a> in the <a href="https://github.com/BrendanJamesLynskey/LLMs">LLMs hub</a>.</p>
+    <p style="margin-top: 0.5rem;"><a href="https://brendanjameslynskey.github.io/LLM_History_02_Pre_Transformer_NLP/">&larr; 02 Pre-Transformer NLP</a> &middot; <a href="https://brendanjameslynskey.github.io/LLM_History_04_University_Labs/">04 University Labs &rarr;</a></p>
+</footer>
+
+</body>
+</html>
