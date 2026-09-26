@@ -106,7 +106,7 @@
 <header class="hero">
     <div class="series-label">LLM History Series &mdash; Presentation 03</div>
     <h1>The <span class="accent">Transformer Paper</span> &mdash; Eight Authors at Google</h1>
-    <p class="subtitle"><em>Attention Is All You Need</em> is famous as a paper. It is also a snapshot of an unusual moment when eight researchers across Google Brain and Google Research, all under thirty-five, briefly collaborated and produced the architecture that runs the modern world.</p>
+    <p class="subtitle"><em>Attention Is All You Need</em> is famous as a paper. It is also a snapshot of an unusual moment when eight researchers across Google Brain and Google Research briefly collaborated and produced the architecture that runs the modern world.</p>
 
     <div class="tags">
         <span class="tag">June 2017</span><span class="tag">NeurIPS 2017</span>
@@ -196,7 +196,7 @@
         <div>
             <h4>Ashish Vaswani &mdash; first author</h4>
             <div class="role">USC PhD &rarr; Google Brain &rarr; Adept &rarr; Essential AI (founder)</div>
-            <p>Indian, did his PhD at USC under Daniel Marcu. The "first author" by alphabetical accident, but heavily involved in the experimental work and the writing. Calm and methodical. Co-founded Adept in 2022 with Niki Parmar; later left to found Essential AI.</p>
+            <p>Indian, did his PhD at USC (ISI) under David Chiang and Liang Huang. The "first author" by the paper's random ordering, but heavily involved in the experimental work and the writing. Calm and methodical. Co-founded Adept in 2022 with Niki Parmar; later left to found Essential AI.</p>
         </div>
     </div>
     <div class="person-card">
@@ -204,7 +204,7 @@
         <div>
             <h4>Noam Shazeer</h4>
             <div class="role">Google (1999&ndash;2021) &rarr; Character.AI co-founder &rarr; Google DeepMind (2024&ndash;)</div>
-            <p>Brilliant, idiosyncratic, the highest-paid IC at Google for years. Joined as employee number ~200, was central to AdSense and several other major systems before drifting into ML. Pushed multi-head attention as a generalisation, did much of the actual implementation. Founded Character.AI in 2021 (returned to Google with Daniel De Freitas in a 2024 reverse-acqui-hire that paid out over $2 B). Now back at DeepMind working on Gemini.</p>
+            <p>Brilliant, idiosyncratic, the highest-paid IC at Google for years. Joined as employee number ~200, was central to AdSense and several other major systems before drifting into ML. Proposed scaled dot-product attention, multi-head attention and the parameter-free position representation, and was involved in nearly every detail. Founded Character.AI in 2021 (returned to Google with Daniel De Freitas in a 2024 reverse-acqui-hire that paid out over $2 B). Now back at DeepMind working on Gemini.</p>
         </div>
     </div>
     <div class="person-card">
@@ -228,7 +228,7 @@
         <div>
             <h4>Llion Jones</h4>
             <div class="role">Google Brain &rarr; Sakana AI (co-founder, Tokyo, 2023)</div>
-            <p>Welsh. Did much of the implementation work in Tensor2Tensor, including the production-quality attention layers everyone subsequently used. Soft-spoken; one of the longest to remain at Google after the paper. Now in Tokyo running Sakana AI with David Ha.</p>
+            <p>Welsh. Was responsible for the team's initial codebase, efficient inference and the attention visualisations. Soft-spoken; one of the longest to remain at Google after the paper. Now in Tokyo running Sakana AI with David Ha.</p>
         </div>
     </div>
     <div class="person-card">
@@ -236,7 +236,7 @@
         <div>
             <h4>Aidan N. Gomez</h4>
             <div class="role">Google Brain intern (2017) &rarr; Oxford &rarr; Cohere (co-founder, 2019)</div>
-            <p>Canadian. The youngest author by a margin &mdash; a 21-year-old University of Toronto undergraduate intern at Brain when the paper was written. Went on to do his DPhil at Oxford under Yarin Gal, then co-founded Cohere with Ivan Zhang and Nick Frosst. CEO of Cohere today.</p>
+            <p>Canadian. The youngest author by a margin &mdash; a 20-year-old University of Toronto undergraduate intern at Brain when the paper was written. Went on to do his DPhil at Oxford under Yarin Gal, then co-founded Cohere with Ivan Zhang and Nick Frosst. CEO of Cohere today.</p>
         </div>
     </div>
     <div class="person-card">
@@ -283,8 +283,8 @@
     <table>
         <thead><tr><th>Task</th><th>Best prior (2016&ndash;17)</th><th>Transformer base</th><th>Transformer big</th></tr></thead>
         <tbody>
-            <tr><td>WMT 2014 EN&rarr;DE</td><td>26.30 BLEU (GNMT + attention ensemble)</td><td>27.3</td><td><strong>28.4</strong></td></tr>
-            <tr><td>WMT 2014 EN&rarr;FR</td><td>40.56 BLEU</td><td>38.1</td><td><strong>41.0</strong></td></tr>
+            <tr><td>WMT 2014 EN&rarr;DE</td><td>26.36 BLEU (ConvS2S ensemble)</td><td>27.3</td><td><strong>28.4</strong></td></tr>
+            <tr><td>WMT 2014 EN&rarr;FR</td><td>41.29 BLEU (ConvS2S ensemble)</td><td>38.1</td><td><strong>41.8</strong></td></tr>
             <tr><td>Training cost</td><td>~weeks on a GPU cluster</td><td>12 h on 8 P100</td><td>3.5 days on 8 P100</td></tr>
         </tbody>
     </table>
@@ -313,8 +313,8 @@
     </div>
 
     <div class="quote">
-        We thought maybe we'd publish this and people would use it instead of LSTMs for translation. We were not thinking about anything beyond that.
-        <span class="attr">&mdash; Aidan Gomez, in interviews around the paper's fifth anniversary (2022)</span>
+        I would be lying if I said I had any appreciation for what was to come.
+        <span class="attr">&mdash; Aidan Gomez, TIME100 AI profile, 2023</span>
     </div>
 
     <p>The team's own framing at the time was modest: a faster, cleaner translation architecture. Almost none of the implications visible by 2020 (decoder-only language modelling at 175 B parameters, in-context learning, scaling laws, RLHF) were anticipated.</p>
@@ -335,7 +335,7 @@
             <tr><td>Layer normalisation</td><td>Borrowed</td><td>Ba, Kiros, Hinton 2016</td></tr>
             <tr><td>Adam</td><td>Borrowed</td><td>Kingma &amp; Ba 2014</td></tr>
             <tr><td>Dropout</td><td>Borrowed</td><td>Srivastava et al 2014</td></tr>
-            <tr><td>Sinusoidal positional encoding</td><td>Borrowed</td><td>Gehring et al, ConvS2S 2017</td></tr>
+            <tr><td>Sinusoidal positional encoding</td><td>New here</td><td>Vaswani et al 2017 (learned embeddings, as in ConvS2S, tested as an alternative)</td></tr>
             <tr><td>Scaled dot-product attention</td><td>New here</td><td>Vaswani et al 2017</td></tr>
             <tr><td>Multi-head attention</td><td>New here</td><td>Vaswani et al 2017</td></tr>
             <tr><td>Removing recurrence entirely</td><td>New here</td><td>Vaswani et al 2017</td></tr>
@@ -364,7 +364,7 @@
                 <li><strong>Alec Radford</strong>, OpenAI &mdash; began work on what became GPT-1 within months.</li>
                 <li><strong>Jacob Devlin</strong>, Google AI Language &mdash; began work on what became BERT.</li>
                 <li><strong>Colin Raffel</strong>, Brain &mdash; began work on what became T5.</li>
-                <li><strong>Andrej Karpathy</strong> &mdash; wrote a <em>minGPT</em> for teaching purposes; predicted decoder-only would dominate.</li>
+                <li><strong>Andrej Karpathy</strong> &mdash; later (2020) wrote <em>minGPT</em> for teaching purposes; predicted decoder-only would dominate.</li>
             </ul>
         </div>
         <div class="diagram-panel y">
@@ -428,10 +428,10 @@
             <tr><td>2019 Feb</td><td>GPT-2 (1.5 B)</td><td>OpenAI</td><td>Coherent paragraph-level generation. Staged release sets norms about disclosure.</td></tr>
             <tr><td>2019 Jul</td><td>RoBERTa</td><td>FAIR</td><td>BERT trained for longer with more data &mdash; comfortably beats BERT. Lesson: training matters more than architectural cleverness.</td></tr>
             <tr><td>2019 Oct</td><td>T5 (Raffel et al)</td><td>Google Brain</td><td>Encoder-decoder transformer at 11 B params. Unifies all NLP as text-to-text. C4 dataset.</td></tr>
-            <tr><td>2019 Nov</td><td>BART</td><td>FAIR</td><td>Denoising encoder-decoder. Strong on summarisation.</td></tr>
+            <tr><td>2019 Oct</td><td>BART</td><td>FAIR</td><td>Denoising encoder-decoder. Strong on summarisation.</td></tr>
             <tr><td>2020 Jan</td><td>Scaling Laws (Kaplan et al)</td><td>OpenAI</td><td>The empirical foundation of "just scale it". See deck 05.</td></tr>
             <tr><td>2020 May</td><td>GPT-3 (175 B)</td><td>OpenAI</td><td>In-context learning. Few-shot generalisation across hundreds of tasks. The tipping point.</td></tr>
-            <tr><td>2020 Dec</td><td>Switch Transformer (1.6 T)</td><td>Google Brain</td><td>Mixture of Experts at scale. Foreshadowing GPT-4 and DeepSeek.</td></tr>
+            <tr><td>2021 Jan</td><td>Switch Transformer (1.6 T)</td><td>Google Brain</td><td>Mixture of Experts at scale. Foreshadowing GPT-4 and DeepSeek.</td></tr>
         </tbody>
     </table>
     </div>
@@ -445,7 +445,7 @@
 <section class="slide" id="slide-09">
     <div class="slide-number">09</div>
     <h2>Why They All Left Google</h2>
-    <p>By the end of 2022 all eight authors of the transformer paper had left Google. Several were already gone before GPT-3 was published. This is not the usual pattern at Google &mdash; senior IC tenure is normally measured in years, and Brain was famously a fun place to work. (Shazeer is the only one who has since returned, via the 2024 Character.AI deal &mdash; see the diaspora table below.)</p>
+    <p>By August 2023 all eight authors of the transformer paper had left Google. Several were already gone before GPT-3 was published. This is not the usual pattern at Google &mdash; senior IC tenure is normally measured in years, and Brain was famously a fun place to work. (Shazeer is the only one who has since returned, via the 2024 Character.AI deal &mdash; see the diaspora table below.)</p>
 
     <p>Each author has talked about their own reasons. Three patterns recur:</p>
 
@@ -456,7 +456,7 @@
         </div>
         <div class="diagram-panel y">
             <h4>2. Compensation / equity</h4>
-            <p>Google paid well but in salary and RSUs, not company-defining equity. The 2018&ndash;2022 founding wave (OpenAI, Anthropic, Cohere, Adept, Character, Inflection, Mistral, Sakana, Inceptive, NEAR) gave researchers double-digit-percent ownership of named, well-funded entities.</p>
+            <p>Google paid well but in salary and RSUs, not company-defining equity. The 2015&ndash;2023 founding wave (OpenAI, Anthropic, Cohere, Adept, Character, Inflection, Mistral, Sakana, Inceptive, NEAR) gave researchers double-digit-percent ownership of named, well-funded entities.</p>
         </div>
         <div class="diagram-panel g">
             <h4>3. Strategic frustration</h4>
@@ -464,10 +464,6 @@
         </div>
     </div>
 
-    <div class="quote">
-        We had everything we needed to ship something like ChatGPT in 2019. We didn't.
-        <span class="attr">&mdash; Reportedly said by several Brain alumni in interviews after 2022; the sentiment is widespread.</span>
-    </div>
 </section>
 
 <section class="slide" id="slide-10">
@@ -477,7 +473,7 @@
 
     <div class="table-wrap">
     <table>
-        <thead><tr><th>Author</th><th>2022 destination</th><th>Status (2026)</th></tr></thead>
+        <thead><tr><th>Author</th><th>First destination</th><th>Status (2026)</th></tr></thead>
         <tbody>
             <tr><td>Vaswani</td><td>Adept (co-founder)</td><td>Essential AI (founder, after leaving Adept)</td></tr>
             <tr><td>Shazeer</td><td>Character.AI (co-founder)</td><td>Google DeepMind (returned 2024 in Character reverse-acqui-hire)</td></tr>
@@ -525,7 +521,7 @@
 
     <div class="callout">
         <div class="callout-label">The paper's most underrated claim</div>
-        <p>The conclusion section ends: <em>"We are excited about the future of attention-based models and plan to apply them to other tasks. We plan to extend the Transformer to problems involving input and output modalities other than text and to investigate local, restricted attention mechanisms to efficiently handle large inputs and outputs such as images, audio and video."</em> Every word of that has come true.</p>
+        <p>The conclusion section says: <em>"We are excited about the future of attention-based models and plan to apply them to other tasks. We plan to extend the Transformer to problems involving input and output modalities other than text and to investigate local, restricted attention mechanisms to efficiently handle large inputs and outputs such as images, audio and video."</em> Every word of that has come true.</p>
     </div>
 </section>
 
