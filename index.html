@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-concept="gallery" lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -102,10 +102,55 @@
     /* deck-mobile-fix:hero */ .hero{overflow:hidden}@supports (overflow-x:clip){.hero{overflow:visible;overflow-x:clip}}
     /* deck-mobile-fix:phone */ @media (max-width:640px){.diagram-box,.tier-fill,.section-divider>span,.action-btn{white-space:normal;overflow-wrap:anywhere}.diagram-grid>*,.diagram-panel,.diagram-box,.code-block,.callout,.metric,.control-group,.control-row>*,.pipeline-body,.roll-track>*,.tier-fill,.timeline-row>*{min-width:0;max-width:100%}p,li,a,code,td,th,.callout,.diagram-panel{overflow-wrap:break-word}pre{max-width:100%;overflow-x:auto}table{display:block;max-width:100%;overflow-x:auto}.katex-display,.bits,.canvas-wrap,.influence-map-wrapper,.timeline-track,div:has(>.bank-cell){max-width:100%;overflow-x:auto;overflow-y:hidden}select,input,img,video,iframe,.action-btn{max-width:100%}canvas{max-width:100%;height:auto}}
     </style>
+<style id="deck-concept">
+html[data-concept=gallery] .hero{min-height:auto;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);column-gap:3rem;align-items:center;align-content:start;justify-items:start;text-align:left;max-width:1200px;margin:0 auto;padding:2.5rem 1.75rem 4rem;position:relative;
+ background:linear-gradient(180deg,transparent 0,transparent calc(100% - 2.2rem),rgba(0,0,0,.05) calc(100% - 2.2rem),rgba(0,0,0,.05) calc(100% - 2rem),transparent calc(100% - 2rem))}
+html[data-concept=gallery] .hero::before,html[data-concept=gallery] .hero::after{display:none}
+html[data-concept=gallery] .hero>*{grid-column:1;margin-left:0;margin-right:0}
+html[data-concept=gallery] .hero .series-label{display:none}
+html[data-concept=gallery] .gl-sign{grid-column:1/-1;width:100%;display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-display);font-size:1rem;color:var(--text-secondary);border-bottom:1px solid var(--border);padding-bottom:.6rem;margin-bottom:2.5rem}
+html[data-concept=gallery] .gl-sign span:first-child{font-style:italic}
+html[data-concept=gallery] .gl-sign span:last-child{font-variant:small-caps;letter-spacing:.06em;color:var(--text-primary)}
+html[data-concept=gallery] .hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem);font-weight:500;line-height:1.05;letter-spacing:-.015em;margin-bottom:1.2rem}
+html[data-concept=gallery] .hero h1 .accent{color:inherit;font-style:italic}
+html[data-concept=gallery] .hero .subtitle{max-width:32rem;font-size:1.05rem;line-height:1.65;margin-bottom:1.5rem;padding-left:1rem;border-left:2px solid var(--accent)}
+html[data-concept=gallery] .hero .tags{display:none}
+html[data-concept=gallery] .hero .pipeline{justify-content:flex-start;margin-bottom:0}
+html[data-concept=gallery] .pipeline-step{background:none;border:0;border-radius:0;padding:0;color:var(--text-secondary);font-family:var(--font-display);font-style:italic;font-size:.95rem}
+html[data-concept=gallery] .pipeline-arrow{color:var(--accent)}
+html[data-concept=gallery] .gl-fig{grid-column:2;grid-row:2/span 6;width:100%;margin:0}
+html[data-concept=gallery] .gl-fig figcaption{font-family:var(--font-display);font-style:italic;font-size:.9rem;color:var(--text-secondary);margin-top:.6rem;text-align:center}
+html[data-concept=gallery] .concept-art{display:block;width:100%;height:auto;overflow:visible}
+html[data-concept=gallery] .concept-art .g-frame{fill:#3a2e22;filter:drop-shadow(0 6px 6px rgba(0,0,0,.22))}
+html[data-concept=gallery] .concept-art .g-mat{fill:#f6f3ec}
+html[data-concept=gallery] .concept-art .g-g1{fill:#d9d3c4}
+html[data-concept=gallery] .concept-art .g-g2{fill:#cfd6cf}
+html[data-concept=gallery] .concept-art .g-g3{fill:#d8cdc6}
+html[data-concept=gallery] .concept-art .g-g4{fill:#cdd2da}
+html[data-concept=gallery] .concept-art .g-form{fill:var(--text-primary);opacity:.16}
+html[data-concept=gallery] .concept-art .g-plate{fill:#b8975a;stroke:#8c6d36;stroke-width:.6}
+html[data-concept=gallery] .concept-art .g-name{font-family:var(--font-display);font-size:9.5px;fill:#2a2116;font-weight:600}
+html[data-concept=gallery] .slide-number{font-family:var(--font-display);font-size:.95rem;font-weight:400;font-style:italic;color:var(--text-secondary);top:4.4rem;right:1.5rem}
+html[data-concept=gallery] .slide-number::before{content:'no.\00a0'}
+html[data-concept=gallery] .slide h2{color:var(--text-primary);font-weight:500;padding-right:3.5rem}
+html[data-concept=gallery] .slide h2::after{content:'';display:block;width:2.5rem;height:2px;margin-top:.6rem;background:var(--accent)}
+html[data-concept=gallery] .callout{border-radius:0;background:none;border:1px solid var(--border);border-left:3px solid var(--accent)}
+html[data-concept=gallery] .callout .callout-label,html[data-concept=gallery] .metric .metric-label{font-family:var(--font-display);text-transform:none;letter-spacing:0;font-size:.95rem;font-style:italic}
+html[data-concept=gallery] .tag{border-radius:2px}
+html[data-concept=gallery] .diagram-grid,html[data-concept=gallery] .canvas-wrap,html[data-concept=gallery] .control-panel,html[data-concept=gallery] .diagram-panel,html[data-concept=gallery] .metric,html[data-concept=gallery] .btn{border-radius:2px}
+@media (max-width:820px){
+ html[data-concept=gallery] .hero{grid-template-columns:minmax(0,1fr);padding:1.5rem 1rem 3rem}
+ html[data-concept=gallery] .gl-fig{grid-column:1;grid-row:auto;order:10;margin-top:2rem}
+}
+</style>
 </head>
 <body>
 
 <header class="hero">
+<!-- deck-concept:start -->
+<div class="gl-sign" aria-hidden="true"><span>The History of LLMs</span><span>Room 3</span></div>
+<figure class="gl-fig"><svg class="concept-art" viewBox="0 0 440 330" role="img" aria-label="A gallery wall of frames labelled June 2017, NeurIPS 2017, Vaswani, Shazeer, Polosukhin, Uszkoreit, Jones, Gomez, Kaiser, Łukasz" xmlns="http://www.w3.org/2000/svg"><rect class="g-frame" x="25.3" y="24.5" width="64" height="52.7"/><rect class="g-mat" x="30.3" y="29.5" width="54" height="42.7"/><rect class="g-g1" x="36.3" y="35.5" width="42" height="30.7"/><circle class="g-form" cx="57.3" cy="50.8" r="8.4"/><rect class="g-plate" x="27.1" y="83.2" width="60.4" height="15" rx="1"/><text class="g-name" x="57.3" y="94.2" text-anchor="middle">June 2017</text><rect class="g-frame" x="124.3" y="24.7" width="72.9" height="54.7"/><rect class="g-mat" x="129.3" y="29.7" width="62.9" height="44.7"/><rect class="g-g2" x="135.3" y="35.7" width="50.9" height="32.7"/><rect class="g-form" x="150.5" y="44.4" width="20.4" height="15.3"/><rect class="g-plate" x="122.1" y="85.4" width="77.2" height="15" rx="1"/><text class="g-name" x="160.7" y="96.4" text-anchor="middle">NeurIPS 2017</text><rect class="g-frame" x="240.2" y="15.7" width="77" height="65.3"/><rect class="g-mat" x="245.2" y="20.7" width="67" height="55.3"/><rect class="g-g3" x="251.2" y="26.7" width="55" height="43.3"/><path class="g-form" d="M265.6 57.5 L278.7 37.9 L291.8 57.5 Z"/><rect class="g-plate" x="254.1" y="87" width="49.2" height="15" rx="1"/><text class="g-name" x="278.7" y="98" text-anchor="middle">Vaswani</text><rect class="g-frame" x="348.4" y="20.6" width="85" height="63.4"/><rect class="g-mat" x="353.4" y="25.6" width="75" height="53.4"/><rect class="g-g4" x="359.4" y="31.6" width="63" height="41.4"/><circle class="g-form" cx="390.9" cy="52.3" r="10.1"/><rect class="g-plate" x="366.3" y="90" width="49.2" height="15" rx="1"/><text class="g-name" x="390.9" y="101" text-anchor="middle">Shazeer</text><rect class="g-frame" x="23.3" y="122.6" width="75.4" height="65.9"/><rect class="g-mat" x="28.3" y="127.6" width="65.4" height="55.9"/><rect class="g-g1" x="34.3" y="133.6" width="53.4" height="43.9"/><rect class="g-form" x="50.4" y="146.3" width="21.1" height="18.5"/><rect class="g-plate" x="28" y="194.5" width="66" height="15" rx="1"/><text class="g-name" x="61" y="205.5" text-anchor="middle">Polosukhin</text><rect class="g-frame" x="131.9" y="123.8" width="76.4" height="59.2"/><rect class="g-mat" x="136.9" y="128.8" width="66.4" height="49.2"/><rect class="g-g2" x="142.9" y="134.8" width="54.4" height="37.2"/><path class="g-form" d="M157.1 161.7 L170.1 144 L183.1 161.7 Z"/><rect class="g-plate" x="139.9" y="189" width="60.4" height="15" rx="1"/><text class="g-name" x="170.1" y="200" text-anchor="middle">Uszkoreit</text><rect class="g-frame" x="235.1" y="124.7" width="80.6" height="54.6"/><rect class="g-mat" x="240.1" y="129.7" width="70.6" height="44.6"/><rect class="g-g3" x="246.1" y="135.7" width="58.6" height="32.6"/><circle class="g-form" cx="275.4" cy="152" r="8.7"/><rect class="g-plate" x="256.4" y="185.3" width="38" height="15" rx="1"/><text class="g-name" x="275.4" y="196.3" text-anchor="middle">Jones</text><rect class="g-frame" x="341.9" y="129.3" width="76.7" height="55.1"/><rect class="g-mat" x="346.9" y="134.3" width="66.7" height="45.1"/><rect class="g-g4" x="352.9" y="140.3" width="54.7" height="33.1"/><rect class="g-form" x="369.6" y="149.2" width="21.5" height="15.4"/><rect class="g-plate" x="361.3" y="190.4" width="38" height="15" rx="1"/><text class="g-name" x="380.3" y="201.4" text-anchor="middle">Gomez</text><rect class="g-frame" x="14" y="223.9" width="75.3" height="59.4"/><rect class="g-mat" x="19" y="228.9" width="65.3" height="49.4"/><rect class="g-g1" x="25" y="234.9" width="53.3" height="37.4"/><path class="g-form" d="M38.9 261.9 L51.7 244.1 L64.5 261.9 Z"/><rect class="g-plate" x="29.9" y="289.3" width="43.6" height="15" rx="1"/><text class="g-name" x="51.7" y="300.3" text-anchor="middle">Kaiser</text><rect class="g-frame" x="127.7" y="232.8" width="65.8" height="53.2"/><rect class="g-mat" x="132.7" y="237.8" width="55.8" height="43.2"/><rect class="g-g2" x="138.7" y="243.8" width="43.8" height="31.2"/><circle class="g-form" cx="160.6" cy="259.4" r="8.5"/><rect class="g-plate" x="138.8" y="292" width="43.6" height="15" rx="1"/><text class="g-name" x="160.6" y="303" text-anchor="middle">Łukasz</text></svg><figcaption>On the wall: June 2017, NeurIPS 2017, Vaswani, Shazeer, Polosukhin, Uszkoreit, Jones, Gomez, Kaiser, Łukasz.</figcaption></figure>
+<!-- deck-concept:end -->
     <div class="series-label">LLM History Series &mdash; Presentation 03</div>
     <h1>The <span class="accent">Transformer Paper</span> &mdash; Eight Authors at Google</h1>
     <p class="subtitle"><em>Attention Is All You Need</em> is famous as a paper. It is also a snapshot of an unusual moment when eight researchers across Google Brain and Google Research briefly collaborated and produced the architecture that runs the modern world.</p>
